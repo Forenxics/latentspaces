@@ -112,6 +112,7 @@ class LatentSpaceApp {
     // Sort Controls
     setupSortControls() {
         const algorithmSelect = document.getElementById('sort-algorithm');
+        const vizModeSelect = document.getElementById('sort-viz-mode');
         const arraySizeSlider = document.getElementById('array-size');
         const arraySizeValue = document.getElementById('array-size-value');
         const speedSlider = document.getElementById('sort-speed');
@@ -120,6 +121,10 @@ class LatentSpaceApp {
         const startBtn = document.getElementById('sort-start');
         const pauseBtn = document.getElementById('sort-pause');
         const resetBtn = document.getElementById('sort-reset');
+
+        vizModeSelect.addEventListener('change', (e) => {
+            this.sortViz.setVisualizationMode(e.target.value);
+        });
 
         arraySizeSlider.addEventListener('input', (e) => {
             const size = parseInt(e.target.value);

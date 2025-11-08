@@ -5,17 +5,18 @@
 }
 
 :root {
-    --bg-primary: #0a0e27;
-    --bg-secondary: #141b3d;
-    --bg-tertiary: #1e2749;
-    --accent-primary: #00d4ff;
-    --accent-secondary: #7b2ff7;
-    --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-primary: #0f0f23;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #16213e;
+    --accent-primary: #00f5ff;
+    --accent-secondary: #a855f7;
+    --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --accent-glow: rgba(0, 245, 255, 0.3);
     --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --border-color: #2d3748;
-    --success: #48bb78;
-    --warning: #ed8936;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --success: #10b981;
+    --warning: #f59e0b;
 }
 
 body {
@@ -36,10 +37,10 @@ body {
 header {
     text-align: center;
     padding: 40px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 30%, #ec4899 70%, #f97316 100%);
     border-radius: 20px;
     margin-bottom: 30px;
-    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 20px 60px rgba(79, 70, 229, 0.4), 0 0 80px rgba(236, 72, 153, 0.2);
     position: relative;
     overflow: hidden;
 }
@@ -51,7 +52,7 @@ header::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.15) 0%, transparent 50%);
     pointer-events: none;
 }
 

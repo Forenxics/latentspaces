@@ -6,6 +6,7 @@ class SortVisualizer {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.array = [];
+        this.elementColors = []; // Store unique color for each element
         this.states = [];
         this.currentState = 0;
         this.isRunning = false;
@@ -14,10 +15,16 @@ class SortVisualizer {
         this.comparisons = 0;
         this.swaps = 0;
         this.startTime = 0;
+        this.visualizationMode = 'bars'; // 'bars' or 'latent'
     }
 
     initialize(size) {
         this.array = Utils.generateRandomArray(size, 100);
+        // Assign a unique color to each element based on its initial value
+        this.elementColors = this.array.map((val, idx) => {
+            const hue = (idx / size) * 360;
+            return { hue, saturation: 0.8, lightness: 0.6 };
+        });
         this.states = [];
         this.currentState = 0;
         this.comparisons = 0;
@@ -26,11 +33,28 @@ class SortVisualizer {
     }
 
     shuffle() {
-        this.array = Utils.shuffleArray(this.array);
+        // Shuffle array while maintaining color associations
+        const indices = this.array.map((_, i) => i);
+        const shuffledIndices = Utils.shuffleArray(indices);
+
+        const newArray = [];
+        const newColors = [];
+        shuffledIndices.forEach(oldIdx => {
+            newArray.push(this.array[oldIdx]);
+            newColors.push(this.elementColors[oldIdx]);
+        });
+
+        this.array = newArray;
+        this.elementColors = newColors;
         this.states = [];
         this.currentState = 0;
         this.comparisons = 0;
         this.swaps = 0;
+        this.draw();
+    }
+
+    setVisualizationMode(mode) {
+        this.visualizationMode = mode;
         this.draw();
     }
 
@@ -322,6 +346,14 @@ class SortVisualizer {
 
     // Drawing methods
     draw() {
+        if (this.visualizationMode === 'latent') {
+            this.drawLatentSpace();
+        } else {
+            this.drawBars();
+        }
+    }
+
+    drawBars() {
         const width = this.canvas.width;
         const height = this.canvas.height;
         const barWidth = width / this.array.length;
@@ -334,17 +366,100 @@ class SortVisualizer {
             const x = idx * barWidth;
             const y = height - barHeight;
 
-            // Gradient for bars
-            const gradient = this.ctx.createLinearGradient(x, y, x, height);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
-
-            this.ctx.fillStyle = gradient;
+            // Use unique color for each element
+            const color = this.elementColors[idx];
+            const rgb = Utils.hslToRgb(color.hue, color.saturation, color.lightness);
+            this.ctx.fillStyle = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
             this.ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+
+            // Add glow effect
+            this.ctx.shadowBlur = 10;
+            this.ctx.shadowColor = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
+            this.ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+            this.ctx.shadowBlur = 0;
+        });
+    }
+
+    drawLatentSpace() {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const padding = 50;
+
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, width, height);
+
+        // Draw axes
+        this.ctx.strokeStyle = '#334155';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(padding, padding);
+        this.ctx.lineTo(padding, height - padding);
+        this.ctx.lineTo(width - padding, height - padding);
+        this.ctx.stroke();
+
+        // Labels
+        this.ctx.fillStyle = '#94a3b8';
+        this.ctx.font = '14px monospace';
+        this.ctx.fillText('Position (Index)', width / 2 - 50, height - 15);
+        this.ctx.save();
+        this.ctx.translate(15, height / 2);
+        this.ctx.rotate(-Math.PI / 2);
+        this.ctx.fillText('Value', 0, 0);
+        this.ctx.restore();
+
+        // Draw points in latent space
+        const xScale = (width - 2 * padding) / this.array.length;
+        const yScale = (height - 2 * padding) / 100;
+
+        this.array.forEach((value, idx) => {
+            const x = padding + idx * xScale + xScale / 2;
+            const y = height - padding - value * yScale;
+
+            // Draw connection lines to show ordering
+            if (idx > 0) {
+                const prevValue = this.array[idx - 1];
+                const prevX = padding + (idx - 1) * xScale + xScale / 2;
+                const prevY = height - padding - prevValue * yScale;
+
+                this.ctx.strokeStyle = 'rgba(100, 116, 139, 0.3)';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(prevX, prevY);
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+            }
+
+            // Draw point
+            const color = this.elementColors[idx];
+            const rgb = Utils.hslToRgb(color.hue, color.saturation, color.lightness);
+            const colorHex = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
+
+            // Outer glow
+            this.ctx.shadowBlur = 15;
+            this.ctx.shadowColor = colorHex;
+            this.ctx.fillStyle = colorHex;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0;
+
+            // Inner bright center
+            this.ctx.fillStyle = '#fff';
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            this.ctx.fill();
         });
     }
 
     drawWithHighlight(comparing, swapping) {
+        if (this.visualizationMode === 'latent') {
+            this.drawLatentSpaceWithHighlight(comparing, swapping);
+        } else {
+            this.drawBarsWithHighlight(comparing, swapping);
+        }
+    }
+
+    drawBarsWithHighlight(comparing, swapping) {
         const width = this.canvas.width;
         const height = this.canvas.height;
         const barWidth = width / this.array.length;
@@ -357,24 +472,123 @@ class SortVisualizer {
             const x = idx * barWidth;
             const y = height - barHeight;
 
-            let color;
+            let colorHex;
+            let glow = 10;
             if (comparing.includes(idx)) {
-                color = '#ffd700'; // Gold for comparing
+                colorHex = '#ffd700'; // Gold for comparing
+                glow = 20;
             } else if (swapping.includes(idx)) {
-                color = '#ff4757'; // Red for swapping
+                colorHex = '#ff1744'; // Bright red for swapping
+                glow = 25;
             } else {
-                const gradient = this.ctx.createLinearGradient(x, y, x, height);
-                gradient.addColorStop(0, '#667eea');
-                gradient.addColorStop(1, '#764ba2');
-                color = gradient;
+                // Use unique color for each element
+                const color = this.elementColors[idx];
+                const rgb = Utils.hslToRgb(color.hue, color.saturation, color.lightness);
+                colorHex = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
             }
 
-            this.ctx.fillStyle = color;
+            this.ctx.fillStyle = colorHex;
+            this.ctx.shadowBlur = glow;
+            this.ctx.shadowColor = colorHex;
             this.ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+            this.ctx.shadowBlur = 0;
+        });
+    }
+
+    drawLatentSpaceWithHighlight(comparing, swapping) {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const padding = 50;
+
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, width, height);
+
+        // Draw axes
+        this.ctx.strokeStyle = '#334155';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(padding, padding);
+        this.ctx.lineTo(padding, height - padding);
+        this.ctx.lineTo(width - padding, height - padding);
+        this.ctx.stroke();
+
+        // Labels
+        this.ctx.fillStyle = '#94a3b8';
+        this.ctx.font = '14px monospace';
+        this.ctx.fillText('Position (Index)', width / 2 - 50, height - 15);
+        this.ctx.save();
+        this.ctx.translate(15, height / 2);
+        this.ctx.rotate(-Math.PI / 2);
+        this.ctx.fillText('Value', 0, 0);
+        this.ctx.restore();
+
+        // Draw points
+        const xScale = (width - 2 * padding) / this.array.length;
+        const yScale = (height - 2 * padding) / 100;
+
+        this.array.forEach((value, idx) => {
+            const x = padding + idx * xScale + xScale / 2;
+            const y = height - padding - value * yScale;
+
+            // Draw connection lines
+            if (idx > 0) {
+                const prevValue = this.array[idx - 1];
+                const prevX = padding + (idx - 1) * xScale + xScale / 2;
+                const prevY = height - padding - prevValue * yScale;
+
+                this.ctx.strokeStyle = 'rgba(100, 116, 139, 0.3)';
+                this.ctx.lineWidth = 1;
+                this.ctx.beginPath();
+                this.ctx.moveTo(prevX, prevY);
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+            }
+
+            // Determine color and size
+            let colorHex;
+            let radius = 6;
+            let glowIntensity = 15;
+
+            if (comparing.includes(idx)) {
+                colorHex = '#ffd700';
+                radius = 8;
+                glowIntensity = 25;
+            } else if (swapping.includes(idx)) {
+                colorHex = '#ff1744';
+                radius = 9;
+                glowIntensity = 30;
+            } else {
+                const color = this.elementColors[idx];
+                const rgb = Utils.hslToRgb(color.hue, color.saturation, color.lightness);
+                colorHex = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
+            }
+
+            // Draw point with glow
+            this.ctx.shadowBlur = glowIntensity;
+            this.ctx.shadowColor = colorHex;
+            this.ctx.fillStyle = colorHex;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0;
+
+            // Inner bright center
+            this.ctx.fillStyle = '#fff';
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius / 2, 0, 2 * Math.PI);
+            this.ctx.fill();
         });
     }
 
     drawSorted() {
+        if (this.visualizationMode === 'latent') {
+            this.drawLatentSpaceSorted();
+        } else {
+            this.drawBarsSorted();
+        }
+    }
+
+    drawBarsSorted() {
         const width = this.canvas.width;
         const height = this.canvas.height;
         const barWidth = width / this.array.length;
@@ -387,13 +601,90 @@ class SortVisualizer {
             const x = idx * barWidth;
             const y = height - barHeight;
 
-            // Green gradient for sorted
-            const gradient = this.ctx.createLinearGradient(x, y, x, height);
-            gradient.addColorStop(0, '#48bb78');
-            gradient.addColorStop(1, '#38a169');
+            // Use unique color with enhanced brightness for sorted state
+            const color = this.elementColors[idx];
+            const rgb = Utils.hslToRgb(color.hue, color.saturation, 0.7); // Brighter
+            const colorHex = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
 
-            this.ctx.fillStyle = gradient;
+            this.ctx.fillStyle = colorHex;
+            this.ctx.shadowBlur = 15;
+            this.ctx.shadowColor = colorHex;
             this.ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+            this.ctx.shadowBlur = 0;
+
+            // Add white highlight at top
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            this.ctx.fillRect(x + 1, y, barWidth - 2, Math.min(barHeight * 0.3, 10));
+        });
+    }
+
+    drawLatentSpaceSorted() {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        const padding = 50;
+
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, width, height);
+
+        // Draw axes
+        this.ctx.strokeStyle = '#10b981';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(padding, padding);
+        this.ctx.lineTo(padding, height - padding);
+        this.ctx.lineTo(width - padding, height - padding);
+        this.ctx.stroke();
+
+        // Labels
+        this.ctx.fillStyle = '#10b981';
+        this.ctx.font = 'bold 14px monospace';
+        this.ctx.fillText('Position (Index) - SORTED ✓', width / 2 - 100, height - 15);
+        this.ctx.save();
+        this.ctx.translate(15, height / 2);
+        this.ctx.rotate(-Math.PI / 2);
+        this.ctx.fillText('Value', 0, 0);
+        this.ctx.restore();
+
+        // Draw points
+        const xScale = (width - 2 * padding) / this.array.length;
+        const yScale = (height - 2 * padding) / 100;
+
+        this.array.forEach((value, idx) => {
+            const x = padding + idx * xScale + xScale / 2;
+            const y = height - padding - value * yScale;
+
+            // Draw connection lines (should be diagonal for sorted)
+            if (idx > 0) {
+                const prevValue = this.array[idx - 1];
+                const prevX = padding + (idx - 1) * xScale + xScale / 2;
+                const prevY = height - padding - prevValue * yScale;
+
+                this.ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(prevX, prevY);
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+            }
+
+            // Draw point with enhanced glow
+            const color = this.elementColors[idx];
+            const rgb = Utils.hslToRgb(color.hue, color.saturation, 0.7);
+            const colorHex = Utils.rgbToHex(rgb.r, rgb.g, rgb.b);
+
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowColor = colorHex;
+            this.ctx.fillStyle = colorHex;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, 7, 0, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0;
+
+            // Inner bright center
+            this.ctx.fillStyle = '#fff';
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            this.ctx.fill();
         });
     }
 
