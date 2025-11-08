@@ -6,15 +6,15 @@ class LatentSpaceApp {
         this.canvas = document.getElementById('main-canvas');
         this.currentViz = 'sort';
 
-        // Set canvas size
-        this.resizeCanvas();
-        window.addEventListener('resize', () => this.resizeCanvas());
-
-        // Initialize visualizers
+        // Initialize visualizers BEFORE resizing
         this.sortViz = new SortVisualizer(this.canvas);
         this.cayleyViz = new CayleyTableVisualizer(this.canvas);
         this.juliaViz = new JuliaSetVisualizer(this.canvas);
         this.complexViz = new ComplexFunctionsVisualizer(this.canvas);
+
+        // Set canvas size AFTER visualizers are created
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
 
         // Setup event listeners
         this.setupNavigation();
@@ -43,16 +43,16 @@ class LatentSpaceApp {
     redrawCurrent() {
         switch(this.currentViz) {
             case 'sort':
-                this.sortViz.draw();
+                if (this.sortViz) this.sortViz.draw();
                 break;
             case 'cayley':
-                this.cayleyViz.draw();
+                if (this.cayleyViz) this.cayleyViz.draw();
                 break;
             case 'julia':
-                this.juliaViz.render();
+                if (this.juliaViz) this.juliaViz.render();
                 break;
             case 'complex':
-                this.complexViz.render();
+                if (this.complexViz) this.complexViz.render();
                 break;
         }
     }
