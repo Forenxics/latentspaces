@@ -1,0 +1,198 @@
+# 🌌 Latent Space Visualizer
+
+An interactive web application that visualizes the hidden dimensions and transformations in various mathematical algorithms and structures.
+
+## Overview
+
+This application provides beautiful, interactive visualizations of:
+
+- **Sorting Algorithms** - Watch how data transforms through different sorting methods
+- **Cayley Tables** - Explore group theory and algebraic structures
+- **Julia Sets** - Navigate stunning fractal patterns in the complex plane
+- **Complex Functions** - Visualize Mandelbrot sets, Newton fractals, and complex operations
+
+## Features
+
+### 1. Sorting Algorithm Visualizations
+
+Visualize the "latent space" of sorting algorithms - see how arrays transform step-by-step through:
+
+- Bubble Sort
+- Quick Sort
+- Merge Sort
+- Insertion Sort
+- Selection Sort
+
+**Features:**
+- Adjustable array size (10-100 elements)
+- Variable animation speed
+- Real-time statistics (comparisons, swaps, time)
+- Color-coded states (comparing in gold, swapping in red)
+
+### 2. Cayley Table Visualizations
+
+Explore algebraic group structures through interactive visualizations:
+
+**Supported Groups:**
+- Cyclic groups (Z₄, Z₅, Z₆)
+- Symmetric group (S₃)
+- Klein four-group (V₄)
+- Dihedral group (D₄)
+
+**Visualization Modes:**
+- Multiplication Table - Traditional group operation table
+- Cayley Graph - Network representation of group structure
+- Heatmap - Color-coded intensity visualization
+
+### 3. Julia Set Fractals
+
+Generate and explore beautiful Julia set fractals:
+
+**Features:**
+- Adjustable complex parameter c (real and imaginary parts)
+- Zoom and pan (mouse scroll and drag)
+- Multiple color schemes (Electric Blue, Fire, Ocean, Rainbow, Monochrome)
+- Configurable iteration depth (50-500)
+- Parameter animation mode
+- Interactive exploration with double-click to zoom
+
+### 4. Complex Function Visualizations
+
+Visualize various complex number operations:
+
+**Functions:**
+- Mandelbrot Set
+- Complex Sine
+- Complex Exponential
+- Polynomial (z³ - 1)
+- Newton Fractal
+
+**Visualization Modes:**
+- Magnitude - Shows absolute value
+- Phase - Shows complex argument
+- Domain Coloring - Full complex plane visualization
+
+**Interactive Features:**
+- Zoom and pan
+- Real-time rendering
+- Adjustable resolution
+
+## Getting Started
+
+### Running Locally
+
+1. Clone or download this repository
+2. Open `index.html` in a modern web browser
+3. No build process or dependencies required!
+
+### Usage Tips
+
+**Sorting Algorithms:**
+- Click "Shuffle" to randomize the array
+- Select an algorithm and click "Start" to begin
+- Use "Pause" to pause/resume animation
+- Adjust speed for slower or faster visualization
+
+**Cayley Tables:**
+- Select different groups to explore their structure
+- Switch between visualization modes to see different perspectives
+- Use "Animate" for dynamic visualization
+
+**Julia Sets:**
+- Adjust the real and imaginary sliders to change the Julia set parameter
+- Click "Render" to generate the fractal
+- Scroll to zoom, drag to pan
+- Double-click to zoom into a specific area
+- Try "Animate Parameters" for a dynamic tour
+
+**Complex Functions:**
+- Select different functions to visualize
+- Switch visualization modes to see magnitude, phase, or domain coloring
+- Zoom and pan to explore interesting regions
+- Each function type reveals different mathematical beauty
+
+## Technical Details
+
+### Architecture
+
+The application is built with vanilla JavaScript and HTML5 Canvas:
+
+- `index.html` - Main application structure
+- `styles.css` - Beautiful modern UI styling
+- `js/utils.js` - Utility functions for colors, complex math, etc.
+- `js/sortVisualizer.js` - Sorting algorithm implementation
+- `js/cayleyTable.js` - Group theory visualizations
+- `js/juliaSet.js` - Julia set fractal generator
+- `js/complexFunctions.js` - Complex function visualizations
+- `js/app.js` - Main application controller
+
+### Performance
+
+- Canvas-based rendering for smooth performance
+- Efficient algorithms with state-based animation
+- Responsive design that adapts to screen size
+- Real-time statistics and performance metrics
+
+### Browser Compatibility
+
+Works in all modern browsers that support:
+- HTML5 Canvas
+- ES6 JavaScript
+- CSS Grid and Flexbox
+
+Tested in Chrome, Firefox, Safari, and Edge.
+
+## Mathematical Background
+
+### Sorting Algorithms
+
+Sorting algorithms transform an unordered array into an ordered one. Each algorithm has different characteristics:
+
+- **Time Complexity**: How the number of operations scales with input size
+- **Space Complexity**: How much extra memory is needed
+- **Stability**: Whether equal elements maintain their relative order
+
+### Group Theory
+
+Groups are fundamental algebraic structures with:
+- **Closure**: Operation on any two elements produces another element in the group
+- **Associativity**: (a∗b)∗c = a∗(b∗c)
+- **Identity**: An element e where e∗a = a∗e = a
+- **Inverse**: For each element a, there exists a⁻¹ where a∗a⁻¹ = e
+
+### Julia Sets
+
+Julia sets are fractals generated by iterating: z_{n+1} = z_n² + c
+
+Different values of the complex parameter c produce wildly different patterns. Points that remain bounded (don't escape to infinity) are in the Julia set.
+
+### Complex Functions
+
+Complex functions map complex numbers (a + bi) to other complex numbers. Visualizing these mappings reveals beautiful patterns:
+
+- **Mandelbrot Set**: Points c where the iteration z_{n+1} = z_n² + c (starting with z₀=0) remains bounded
+- **Domain Coloring**: Uses hue for phase and brightness for magnitude
+- **Newton Fractals**: Visualizes which root Newton's method converges to from different starting points
+
+## License
+
+MIT License - Feel free to use and modify for your own projects!
+
+## Contributing
+
+Contributions are welcome! Some ideas for enhancements:
+
+- Add more sorting algorithms (heap sort, radix sort, etc.)
+- Implement more group structures
+- Add 3D visualizations
+- Performance optimizations with WebGL
+- More complex function types
+- Save/export visualizations as images
+
+## Credits
+
+Created as a demonstration of mathematical beauty and algorithmic visualization.
+
+---
+
+**Enjoy exploring the hidden dimensions of mathematics!** 🌌
