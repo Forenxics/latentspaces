@@ -13,6 +13,7 @@ class JuliaSetVisualizer {
         this.colorScheme = 'electric';
         this.isAnimating = false;
         this.animationFrame = 0;
+        this.interactivitySetup = false;
     }
 
     setParameter(real, imag) {
@@ -196,6 +197,10 @@ class JuliaSetVisualizer {
 
     // Add interactivity for zooming and panning
     setupInteractivity() {
+        // Prevent adding duplicate event listeners
+        if (this.interactivitySetup) return;
+        this.interactivitySetup = true;
+
         let isDragging = false;
         let lastX, lastY;
 

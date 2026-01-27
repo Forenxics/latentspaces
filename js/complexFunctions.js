@@ -11,6 +11,7 @@ class ComplexFunctionsVisualizer {
         this.centerX = -0.5;
         this.centerY = 0;
         this.maxIterations = 100;
+        this.interactivitySetup = false;
     }
 
     setFunction(functionType) {
@@ -302,6 +303,10 @@ class ComplexFunctionsVisualizer {
     }
 
     setupInteractivity() {
+        // Prevent adding duplicate event listeners
+        if (this.interactivitySetup) return;
+        this.interactivitySetup = true;
+
         let isDragging = false;
         let lastX, lastY;
 

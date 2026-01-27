@@ -349,15 +349,17 @@ class CayleyTableVisualizer {
             if (!this.isAnimating) return;
 
             this.animationFrame++;
-            this.draw();
 
-            // Add rotation or other animation effects
+            // Apply rotation transform BEFORE drawing for graph mode
             if (this.mode === 'graph') {
                 this.ctx.save();
                 this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
                 this.ctx.rotate(this.animationFrame * 0.01);
                 this.ctx.translate(-this.canvas.width / 2, -this.canvas.height / 2);
+                this.draw();
                 this.ctx.restore();
+            } else {
+                this.draw();
             }
 
             requestAnimationFrame(animate);
